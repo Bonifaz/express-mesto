@@ -1,24 +1,27 @@
 const Card = require('../models/card');
+const BadRequest = require('../errors/BadRequest');
+const NotFoundError = require('../errors/NotFoundError');
+const ServerError = require('../errors/ServerError');
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   Card.find({})
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Данные не найдены' });
+        next(new NotFoundError('Данные не найдены'))
       } else {
         res.send(card);
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Некоректные данные или формат данных' });
+        next(new BadRequest('Некоректные данные или формат данных'))
       } else {
-        res.status(500).send({ message: 'Ошибка сервера' });
+        next(new ServerError('Ошибка сервера'))
       }
     });
 };
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => {
@@ -26,32 +29,31 @@ const createCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Некоректные данные или формат данных' });
+        next(new BadRequest('Некоректные данные или формат данных'))
       }
 
-      return res.status(500).send(err);
+      next(new ServerError('Ошибка сервера'))
     });
 };
 
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params._id)
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Данные не найдены' });
-        return;
+        next(new NotFoundError('Данные не найдены'))
       }
       res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Некоректные данные или формат данных' });
+        next(new BadRequest('Некоректные данные или формат данных'))
       } else {
-        res.status(500).send({ message: 'Ошибка сервера' });
+        next(new ServerError('Ошибка сервера'))
       }
     });
 };
 
-const likeCard = (req, res) => {
+const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params._id, {
       $addToSet: { likes: req.user._id },
@@ -59,21 +61,21 @@ const likeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Данные не найдены' });
-        return;
+        next(new NotFoundError('Данные не найдены'))
       }
       res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Некоректные данные или формат данных' });
-      } else {
-        res.status(500).send({ message: 'Ошибка сервера' });
+        next(new BadRequest('Некоректные данные или формат данных'))
+      }
+      else {
+        next(new ServerError('Ошибка сервера'))
       }
     });
 };
 
-const deleteLikeCard = (req, res) => {
+const deleteLikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params._id,
     {
@@ -83,16 +85,18 @@ const deleteLikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Данные не найдены' });
-      } else {
+        next(new NotFoundError('Данные не найдены'))
+      }
+      else {
         res.send(card);
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Некоректные данные или формат данных' });
-      } else {
-        res.status(500).send({ message: 'Ошибка сервера' });
+        next(new BadRequest('Некоректные данные или формат данных'))
+      }
+      else {
+        next(new ServerError('Ошибка сервера'))
       }
     });
 };
