@@ -18,25 +18,25 @@ const userSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator: (v) => isURL(v),
-      message: "Неправильный формат URL",
+      message: 'Неправильный формат URL',
     },
-    default:'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
   },
-  email:{
+  email: {
     type: String,
     required: true,
-    unique: true, //проверка поля на уникальность
+    unique: true, // проверка поля на уникальность
     validate: {
       validator: (email) => isEmail(email),
-      message: "Указан неверный формат почты",
+      message: 'Указан неверный формат почты',
     },
   },
-  password:{
+  password: {
     type: String,
     required: true,
     minlength: 8,
-    select: false
-  }
+    select: false,
+  },
 });
 
 module.exports = mongoose.model('user', userSchema);

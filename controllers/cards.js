@@ -8,16 +8,16 @@ const getCards = (req, res, next) => {
   Card.find({})
     .then((card) => {
       if (!card) {
-        next(new NotFoundError('Данные не найдены'))
+        next(new NotFoundError('Данные не найдены'));
       } else {
         res.send(card);
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequest('Некоректные данные или формат данных'))
+        next(new BadRequest('Некоректные данные или формат данных'));
       } else {
-        next(new ServerError('Ошибка сервера'))
+        next(new ServerError('Ошибка сервера'));
       }
     });
 };
@@ -30,10 +30,10 @@ const createCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequest('Некоректные данные или формат данных'))
+        next(new BadRequest('Некоректные данные или формат данных'));
       }
 
-      next(new ServerError('Ошибка сервера'))
+      next(new ServerError('Ошибка сервера'));
     });
 };
 
@@ -42,20 +42,19 @@ const deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params._id)
     .then((card) => {
       if (!card) {
-        next(new NotFoundError('Данные не найдены'))
-      }
-      else{
-        if(String(card.owner) === owner){
+        next(new NotFoundError('Данные не найдены'));
+      } else {
+        if (String(card.owner) === owner) {
           res.send(card);
         }
-        next(new Unauthorized('Нельзя удалять чужие карточки'))
+        next(new Unauthorized('Нельзя удалять чужие карточки'));
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequest('Некоректные данные или формат данных'))
+        next(new BadRequest('Некоректные данные или формат данных'));
       } else {
-        next(new ServerError('Ошибка сервера'))
+        next(new ServerError('Ошибка сервера'));
       }
     });
 };
@@ -68,16 +67,15 @@ const likeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        next(new NotFoundError('Данные не найдены'))
+        next(new NotFoundError('Данные не найдены'));
       }
       res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequest('Некоректные данные или формат данных'))
-      }
-      else {
-        next(new ServerError('Ошибка сервера'))
+        next(new BadRequest('Некоректные данные или формат данных'));
+      } else {
+        next(new ServerError('Ошибка сервера'));
       }
     });
 };
@@ -92,18 +90,16 @@ const deleteLikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        next(new NotFoundError('Данные не найдены'))
-      }
-      else {
+        next(new NotFoundError('Данные не найдены'));
+      } else {
         res.send(card);
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequest('Некоректные данные или формат данных'))
-      }
-      else {
-        next(new ServerError('Ошибка сервера'))
+        next(new BadRequest('Некоректные данные или формат данных'));
+      } else {
+        next(new ServerError('Ошибка сервера'));
       }
     });
 };

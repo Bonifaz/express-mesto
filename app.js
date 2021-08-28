@@ -1,14 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
-const { createUser, login } = require('./controllers/users');
 const cookieParser = require('cookie-parser');
+const { celebrate, Joi, errors } = require('celebrate');
+const { createUser, login } = require('./controllers/users');
 const errorsHandler = require('./middlewares/errors');
-const auth = require("./middlewares/auth");
+const auth = require('./middlewares/auth');
 const userRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const NotFoundError = require('./errors/NotFoundError');
-const { celebrate, Joi, errors } = require("celebrate");
 
 const { PORT = 3000 } = process.env;
 
@@ -47,7 +47,7 @@ app.use(auth);
 app.use('/', userRouter);
 app.use('/', cardsRouter);
 app.use('*', (req, res, next) => {
-  next(new NotFoundError('Ресурс не найден.'))
+  next(new NotFoundError('Ресурс не найден.'));
 });
 app.use(errors());
 app.use(errorsHandler);
