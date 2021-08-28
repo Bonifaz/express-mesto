@@ -5,6 +5,7 @@ const BadRequest = require('../errors/BadRequest');
 const NotFoundError = require('../errors/NotFoundError');
 const Unauthorized = require('../errors/Unauthorized');
 const ServerError = require('../errors/ServerError');
+const Conflict = require('../errors/Conflict');
 
 const getUsers = (req, res, next) => {
   User.find({}).then((users) => {
@@ -21,7 +22,6 @@ const getUser = (req, res, next) => {
       if (user === null) {
         next(new NotFoundError('Данные не найдены'))
       }
-
       return res.status(200).send(user);
     })
     .catch((err) => {
@@ -37,19 +37,25 @@ const createUser = (req, res, next) => {
   const { name, about, avatar, email, password } = req.body;
   User.findOne({email}).then((user) =>{
     if(user){
-      next(new NotFoundError('Пользователь с таким email существует'));
+      next(new Conflict('Пользователь с таким email существует'));
     }
     bcrypt.hash(password, 10)
     .then(hash => {
       User.create({ name, about, avatar, email, password: hash})
+      .then(({name, about, avatar, email}) => {
+        res.status(200).send({ data: {name, about, avatar, email} })
+      })
+      .catch((err) => {
+        if (err.name === 'ValidationError') {
+          next(new BadRequest('Некоректные данные или формат данных'))
+        }
+        next(new ServerError('Ошибка сервера' ))
+      });
     })
-    .then((user) => res.status(200).send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequest('Некоректные данные или формат данных'))
-      }
+    .catch(()=>{
       next(new ServerError('Ошибка сервера' ))
-    });
+    })
+
   })
 }
 
