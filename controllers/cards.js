@@ -2,7 +2,6 @@ const Card = require('../models/card');
 const BadRequest = require('../errors/BadRequest');
 const NotFoundError = require('../errors/NotFoundError');
 const ServerError = require('../errors/ServerError');
-const Unauthorized = require('../errors/Unauthorized');
 const Forbidden = require('../errors/Forbidden');
 
 const getCards = (req, res, next) => {
@@ -44,8 +43,7 @@ const deleteCard = (req, res, next) => {
     .then((card) => {
       if (!card) {
         next(new NotFoundError('Данные не найдены'));
-      }
-      else {
+      } else {
         if (String(card.owner) === owner) {
           card.remove();
           res.send(card);

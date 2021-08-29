@@ -5,7 +5,7 @@ const { JWT_SECRET = 'mentos-key' } = process.env;
 
 module.exports = (req, res, next) => {
   if (!req.cookies.jwt) {
-    next(new Unauthorized('Неправильный email или пароль'));
+    next(new Unauthorized('Необходима авторизация'));
   }
   const token = req.cookies.jwt;
 
@@ -14,7 +14,7 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
-    next(new Unauthorized('Неправильный email или пароль'));
+    next(new Unauthorized('Необходима авторизация'));
   }
 
   req.user = payload;
