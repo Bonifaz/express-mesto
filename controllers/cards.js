@@ -45,10 +45,15 @@ const deleteCard = (req, res, next) => {
         next(new NotFoundError('Данные не найдены'));
       } else {
         if (String(card.owner) === owner) {
-          card.remove();
-          res.send(card);
+          card.remove().then(() =>{
+          res.status(200).send(card);
+        })
+        .catch((err) =>{
+          next(new ServerError('500: ошибка на сервере'));
+        })
+        } else {
+          next(new Forbidden('403: Нельзя удалять чужие карточки'));
         }
-        next(new Forbidden('Нельзя удалять чужие карточки'));
       }
     })
     .catch((err) => {
